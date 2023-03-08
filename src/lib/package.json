@@ -1,6 +1,6 @@
 {
-  "name": "ngx-toastr",
-  "version": "0.0.0-placeholder",
+  "name": "@servoy/ngx-toastr",
+  "version": "16.1.0-s1",
   "peerDependencies": {
     "@angular/core": ">=14.0.0-0",
     "@angular/common": ">=14.0.0-0",
