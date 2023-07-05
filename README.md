@@ -6,9 +6,6 @@
   <a href="https://www.npmjs.org/package/ngx-toastr">
     <img src="https://badge.fury.io/js/ngx-toastr.svg" alt="npm">
   </a>
-  <a href="https://circleci.com/gh/scttcper/ngx-toastr">
-    <img src="https://circleci.com/gh/scttcper/ngx-toastr.svg?style=svg" alt="circleci">
-  </a>
   <a href="https://codecov.io/github/scttcper/ngx-toastr">
     <img src="https://img.shields.io/codecov/c/github/scttcper/ngx-toastr.svg" alt="codecov">
   </a>
@@ -40,7 +37,8 @@ Latest version available for each version of Angular
 | 13.2.1     | 10.x 11.x   |
 | 14.3.0     | 12.x 13.x   |
 | 15.2.2     | 14.x.       |
-| current    | >= 15.x     |
+| 16.2.0     | 15.x        |
+| current    | >= 16.x     |
 
 ## Install
 
@@ -94,7 +92,9 @@ Don't want to use `@angular/animations`? See
 ]
 ```
 
-**step 2:** add ToastrModule to app NgModule, make sure you have BrowserAnimationsModule as well
+**step 2:** add `ToastrModule` to app `NgModule`, or `provideToastr` to providers, make sure you have `BrowserAnimationsModule` (or `provideAnimations`) as well.
+
+- Module based
 
 ```typescript
 import { CommonModule } from '@angular/common';
@@ -112,6 +112,22 @@ import { ToastrModule } from 'ngx-toastr';
   declarations: [App],
 })
 class MainModule {}
+```
+
+- Standalone
+
+```typescript
+import { AppComponent } from './src/app.component';
+import { provideAnimations } from '@angular/platform-browser/animations';
+
+import { provideToastr } from 'ngx-toastr';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideAnimations(), // required animations providers
+    provideToastr(), // Toastr providers
+  ]
+});
 ```
 
 ## Use
@@ -197,7 +213,9 @@ iconClasses = {
 
 #### Setting Global Options
 
-Pass values to `ToastrModule.forRoot()`
+Pass values to `ToastrModule.forRoot()` or `provideToastr()` to set global options.
+
+- Module based
 
 ```typescript
 // root app NgModule
@@ -209,6 +227,26 @@ imports: [
   }),
 ],
 ```
+
+- Standalone
+
+```typescript
+import { AppComponent } from './src/app.component';
+import { provideAnimations } from '@angular/platform-browser/animations';
+
+import { provideToastr } from 'ngx-toastr';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideToastr({
+      timeOut: 10000,
+      positionClass: 'toast-bottom-right',
+      preventDuplicates: true,
+    }), 
+  ]
+});
+```
+
 
 ### Toastr Service methods return:
 

@@ -10,8 +10,9 @@ import {
   HostBinding,
   HostListener,
   NgZone,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
+import { NgIf } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { IndividualConfig, ToastPackage } from './toastr-config';
 import { ToastrService } from './toastr.service';
@@ -44,17 +45,13 @@ import { ToastrService } from './toastr.service';
       state('inactive', style({ opacity: 0 })),
       state('active', style({ opacity: 1 })),
       state('removed', style({ opacity: 0 })),
-      transition(
-        'inactive => active',
-        animate('{{ easeTime }}ms {{ easing }}')
-      ),
-      transition(
-        'active => removed',
-        animate('{{ hideEaseTime }}ms {{ hideEasing }}')
-      )
+      transition('inactive => active', animate('{{ easeTime }}ms {{ easing }}')),
+      transition('active => removed', animate('{{ hideEaseTime }}ms {{ hideEasing }}')),
     ])
   ],
-  preserveWhitespaces: false
+  preserveWhitespaces: false,
+  standalone: true,
+  imports: [NgIf],
 })
 export class Toast<ConfigPayload = any> implements OnDestroy {
   message?: string | null;
@@ -67,15 +64,10 @@ export class Toast<ConfigPayload = any> implements OnDestroy {
   /** a combination of toast type and options.toastClass */
   @HostBinding('class') toastClasses = '';
   /** controls animation */
-  @HostBinding('@flyInOut')
-  state = {
-    value: 'inactive',
-    params: {
-      easeTime: this.toastPackage.config.easeTime,
-      hideEaseTime: this.toastPackage.config.hideEaseTime ? this.toastPackage.config.hideEaseTime : this.toastPackage.config.easeTime,
-      easing: this.toastPackage.config.easing,
-      hideEasing: this.toastPackage.config.hideEasing ? this.toastPackage.config.hideEasing : this.toastPackage.config.easing
-    }
+  @HostBinding('@flyInOut') state!: {
+    value: 'inactive' | 'active' | 'removed';
+    params: { easeTime: number | string; easing: string;
+                   hideEaseTime: number | string; hideEasing: string  };  
   };
 
   /** hides component when waiting to be displayed */
@@ -99,15 +91,13 @@ export class Toast<ConfigPayload = any> implements OnDestroy {
   constructor(
     protected toastrService: ToastrService,
     public toastPackage: ToastPackage,
-    protected ngZone?: NgZone
+    protected ngZone?: NgZone,
   ) {
     this.message = toastPackage.message;
     this.title = toastPackage.title;
     this.options = toastPackage.config;
     this.originalTimeout = toastPackage.config.timeOut;
-    this.toastClasses = `${toastPackage.toastType} ${
-      toastPackage.config.toastClass
-    }`;
+    this.toastClasses = `${toastPackage.toastType} ${toastPackage.config.toastClass}`;
     this.sub = toastPackage.toastRef.afterActivate().subscribe(() => {
       this.activateToast();
     });
@@ -120,6 +110,15 @@ export class Toast<ConfigPayload = any> implements OnDestroy {
     this.sub3 = toastPackage.toastRef.countDuplicate().subscribe(count => {
       this.duplicatesCount = count;
     });
+    this.state = {
+      value: 'inactive',
+      params:  {
+      easeTime: this.toastPackage.config.easeTime,
+      easing: this.toastPackage.config.easing,
+      hideEaseTime: this.toastPackage.config.hideEaseTime ? this.toastPackage.config.hideEaseTime : this.toastPackage.config.easeTime,
+      hideEasing: this.toastPackage.config.hideEasing ? this.toastPackage.config.hideEasing : this.toastPackage.config.easing
+    },
+    };
   }
   ngOnDestroy() {
     this.sub.unsubscribe();
@@ -134,7 +133,10 @@ export class Toast<ConfigPayload = any> implements OnDestroy {
    */
   activateToast() {
     this.state = { ...this.state, value: 'active' };
-    if (!(this.options.disableTimeOut === true || this.options.disableTimeOut === 'timeOut') && this.options.timeOut) {
+    if (
+      !(this.options.disableTimeOut === true || this.options.disableTimeOut === 'timeOut') &&
+      this.options.timeOut
+    ) {
       this.outsideTimeout(() => this.remove(), this.options.timeOut);
       this.hideTime = new Date().getTime() + this.options.timeOut;
       if (this.options.progressBar) {
@@ -212,7 +214,7 @@ export class Toast<ConfigPayload = any> implements OnDestroy {
       clearTimeout(this.timeout);
       this.options.timeOut = 0;
       this.hideTime = 0;
-  
+
       // disable progressBar
       clearInterval(this.intervalId);
       this.width = 0;
