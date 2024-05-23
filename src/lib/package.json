@@ -1,10 +1,10 @@
 {
   "name": "@servoy/ngx-toastr",
-  "version": "17.0.2-s1",
+  "version": "18.0.0-s1",
   "peerDependencies": {
-    "@angular/core": ">=16.0.0-0",
-    "@angular/common": ">=16.0.0-0",
-    "@angular/platform-browser": ">=16.0.0-0"
+    "@angular/core": ">=17.0.0-0",
+    "@angular/common": ">=17.0.0-0",
+    "@angular/platform-browser": ">=17.0.0-0"
   },
   "exports": {
     "./toastr": {
