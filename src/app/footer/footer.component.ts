@@ -1,16 +1,17 @@
-import { Component, VERSION } from '@angular/core';
+import { Component, VERSION, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-footer',
   template: `
-  <footer class="footer mb-4 mt-5">
-    Angular {{ version }}
-    <br>
-    <a href="https://github.com/scttcper/ngx-toastr/blob/master/LICENSE">MIT license</a>
-    -
-    <a href="https://github.com/scttcper/ngx-toastr">Source</a>
-  </footer>
+    <footer class="footer mb-4 mt-5">
+      Angular {{ version }}
+      <br />
+      <a href="https://github.com/scttcper/ngx-toastr/blob/master/LICENSE">MIT license</a>
+      -
+      <a href="https://github.com/scttcper/ngx-toastr">Source</a>
+    </footer>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       .footer {
